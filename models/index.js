@@ -14,11 +14,11 @@ module.exports = (Sequelize, config) => {
     const pizzas = Pizza(Sequelize, sequelize);
 
 //one to many
-    turtles.belongsTo(weapons);
-    weapons.hasMany(turtles, {foreignKey: 'weaponId'});
+        turtles.belongsTo(weapons);
+        weapons.hasMany(turtles, {foreignKey: 'weaponId'});
 //many to many
-    turtles.belongsToMany(pizzas, {through: 'turtlesPizzas'});
-    pizzas.belongsToMany(turtles, {through: 'turtlesPizzas'});
+        turtles.belongsToMany(pizzas, {through: 'turtlesPizzas'});
+        pizzas.belongsToMany(turtles, {through: 'turtlesPizzas'});
 
     return {
         turtles,
