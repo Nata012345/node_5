@@ -2,9 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 module.exports = (bd) => {
-    console.log('Pizza 1');
     router.post('/', async ({body}, res) => {
-        console.log('Pizza 2');
         try {
            const pizza = await bd.pizzas.create(body);
            res.json(pizza);
