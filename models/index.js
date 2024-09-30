@@ -2,6 +2,7 @@ const Turtle = require('./turtle');
 const Weapon = require('./weapon');
 const Pizza = require('./pizza');
 
+
 module.exports = (Sequelize, config) => {
     const sequelize = new Sequelize(config.database, config.username, config.password, {
         host: config.host,
