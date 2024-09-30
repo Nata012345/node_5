@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize');
-const express = require('express');
+const express  =  require('express');
 
 const initPizza = require('./models/data/initialPizza');
 const initWeapon = require('./models/data/initialWeapon');
