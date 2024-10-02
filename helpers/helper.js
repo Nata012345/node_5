@@ -14,7 +14,7 @@ const readPizzas = async () => {
         console.error("Error retrieving pizzas:", err);
     }
 }
-const readTurtles = async () =>{
+const readTurtles = async () => {
     try {
         const turtle = await bd.turtles.findAll();
         console.log("Turtles retrieved successfully:", turtle);
@@ -22,9 +22,28 @@ const readTurtles = async () =>{
         console.error("Error retrieving turtles:", err);
     }
 }
+const getTurtlesWithFavoritePizza = async () => {
+    try {
+        const turtles = await bd.turtles.findAll({
+             include: [
+                 {
+                     model: bd.pizzas,
+                     where: {
+                         name: 'Mozzarella',
+                     },
+                 },
+             ],
+         });
+        console.log(turtles);
+     } catch (err) {
+        console.error(err);
+     }
+}
+
 module.exports = {
-    initializeData,
-    readPizzas,
-    readWeapons,
-    readTurtles
+    getTurtlesWithFavoritePizza,
+
+    // readPizzas,
+    // readWeapons,
+    // readTurtles,
 }

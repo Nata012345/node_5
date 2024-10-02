@@ -1,5 +1,5 @@
 const express = require('express');
-const {raw} = require("mysql2");
+const {Op} = require("sequelize");
 const router = express.Router();
 
 module.exports = (bd) => {
@@ -51,6 +51,20 @@ module.exports = (bd) => {
                 }
             })
             res.json(weapon);
+        } catch (err) {
+            res.status(500).send(err);
+        }
+    })
+    router.get('/numberOfWeapons', async (req, res) => {
+        try {
+            const weapons = await bd.weapons.count({
+                where: {
+                    dps: {
+                        [Op.gt]: 100,
+                    }
+                }
+            })
+            res.json(weapons);
         } catch (err) {
             res.status(500).send(err);
         }

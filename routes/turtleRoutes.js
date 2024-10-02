@@ -31,6 +31,7 @@ module.exports = (bd) => {
         }
     });
     router.put('/:id', async ({body, params}, res) => {
+        console.log(params);
         try {
             const turtle = await bd.turtles.update(body, {
                 where: {
@@ -54,6 +55,26 @@ module.exports = (bd) => {
             res.status(404).send(err);
         }
     })
+    // router.get('/:pizzasName', async({params}, res) => {
+    //     console.log(params);
+    //     try {
+    //         const turtles = await bd.turtles.findAll({
+    //             include: [
+    //                 {
+    //                     model: bd.pizzas,
+    //                     where: {
+    //                         name: params,
+    //                     },
+    //                     through: {attributes: []}
+    //                 }
+    //             ]
+    //         })
+    //         res.json(turtles);
+    //     } catch (err) {
+    //         res.status(500).send(err);
+    //     }
+    // })
     return router;
+
 }
 
