@@ -39,10 +39,34 @@ const getTurtlesWithFavoritePizza = async () => {
         console.error(err);
      }
 }
+const getAllFavoritePizzasWithoutRepeat = async () => {
+    try {
+        const pizzas = await bd.pizzas.findAll({
+            include: [
+                {
+                    model: bd.turtles,
+                    as: 'firstFavoritePizza',
+                    attributes: [],
+                },
+                {
+                    model: bd.turtles,
+                    as: 'secondFavoritePizza',
+                    attributes: [],
+                }
+            ],
+            attributes: ['name'],
+            distinct: true,
+        });
+        console.log(pizzas);
+    } catch (err) {
+        console.error(err);
+    }
+}
+
 
 module.exports = {
     getTurtlesWithFavoritePizza,
-
+    getAllFavoritePizzasWithoutRepeat,
     // readPizzas,
     // readWeapons,
     // readTurtles,
