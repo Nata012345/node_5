@@ -4,7 +4,14 @@ const express  =  require('express');
 const initPizza = require('./models/data/initialPizza');
 const initWeapon = require('./models/data/initialWeapon');
 const initTurtle = require('./models/data/initialTurtle');
-// const { initializeData, readData } = require('./helpers/helper');
+const { getAllTurtles,
+    getTurtlesWithFavoritePizza,
+    getAllFavoritePizzasWithoutRepeat,
+    addTurtle,
+    updatePizzasSuperFat,
+    getNumberOfWeapons,
+    getPizzaWithId,
+    addTurtleFavoritePizza } = require('./helpers/helper');
 
 const config = require('./config.json');
 const bd = require('./models')(Sequelize, config);
@@ -49,5 +56,8 @@ bd.sequelize.sync()
         app.use('/api/pizzas', pizzaRoutes);
         app.use('/api/weapons', weaponRoutes);
         app.use('/api/turtles', turtleRoutes);
+
+        getAllTurtles();
+
     })
     .catch((err) => console.log('error', err));
