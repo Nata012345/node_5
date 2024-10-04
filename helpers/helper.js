@@ -1,93 +1,120 @@
 const {Sequelize, Op } = require("sequelize");
-const readWeapons = async () => {
-    try {
-        const weapon = await bd.weapons.findAll(); // Предполагается, что Weapon - это ваша модель
-        console.log("Weapons retrieved successfully:", weapon);
-    } catch (err) {
-        console.error("Error retrieving weapons:", err);
-    }
-};
-const readPizzas = async () => {
-    try {
-        const pizza = await bd.pizzas.findAll();
-        console.log("Pizzas retrieved successfully:", pizza)
-    } catch (err) {
-        console.error("Error retrieving pizzas:", err);
-    }
-}
-const readTurtles = async () => {
-    try {
-        const turtle = await bd.turtles.findAll();
-        console.log("Turtles retrieved successfully:", turtle);
-    } catch (err) {
-        console.error("Error retrieving turtles:", err);
-    }
-}
-const getAllTurtles = async () => {
-    try {
-        const turtles = await bd.turtles.findAll();
-        console.log(turtles);
-    }catch (err) {
-        console.error(err);
-    }
-}
-const getTurtlesWithFavoritePizza = async () => {
+const  bd = require('../models');
+
+const getAllTurtles = async (bd) => {
     try {
         const turtles = await bd.turtles.findAll({
-             include: [
-                 {
-                     model: bd.pizzas,
-                     where: {
-                         name: 'Mozzarella',
-                     },
-                 },
-             ],
+            attributes: ['id', 'name', 'color'],
+            include: [
+                {
+                    model: bd.weapons,
+                    as: 'weapon',
+                    attributes: ['name'],
+                },
+                {
+                    model: bd.pizzas,
+                    as: 'firstFavoritePizza',
+                    attributes: ['name'],
+                },
+                {
+                    model: bd.pizzas,
+                    as: 'secondFavoritePizza',
+                    attributes: ['name'],
+                },
+            ]
+        });
+        return turtles
+    }catch (err) {
+        return 'err'
+    }
+}
+// const readWeapons = async () => {
+//     try {
+//         const weapon = await bd.weapons.findAll(); // Предполагается, что Weapon - это ваша модель
+//         console.log("Weapons retrieved successfully:", weapon);
+//     } catch (err) {
+//         console.error("Error retrieving weapons:", err);
+//     }
+// };
+// const readPizzas = async () => {
+//     try {
+//         const pizza = await bd.pizzas.findAll();
+//         console.log("Pizzas retrieved successfully:", pizza)
+//     } catch (err) {
+//         console.error("Error retrieving pizzas:", err);
+//     }
+// }
+// const readTurtles = async () => {
+//     try {
+//         const turtle = await bd.turtles.findAll();
+//         console.log("Turtles retrieved successfully:", turtle);
+//     } catch (err) {
+//         console.error("Error retrieving turtles:", err);
+//     }
+// }
+
+const getTurtlesWithFavoritePizza = async (bd, pizzaName) => {
+    try {
+        const turtles = await bd.turtles.findAll({
+            attributes: ['id', 'name', 'color'],
+            include: [
+                {
+                    model: bd.weapons,
+                    as: 'weapon',
+                    attributes: ['name'],
+                },
+                {
+                    model: bd.pizzas,
+                    as: 'firstFavoritePizza',
+                    attributes: ['name'],
+                    required: true,
+                },
+                {
+                    model: bd.pizzas,
+                    as: 'secondFavoritePizza',
+                    attributes: ['name'],
+                    required: true,
+                },
+            ],
+            where: {
+                [Op.or]: [
+                    { '$firstFavoritePizza.name$': pizzaName },
+                    { '$secondFavoritePizza.name$': pizzaName },
+                ],
+            },
          });
-        console.log(turtles);
+        return turtles;
      } catch (err) {
-        console.error(err);
+        return err
      }
 }
-const getAllFavoritePizzasWithoutRepeat = async () => {
+const getAllFavoritePizzasWithoutRepeat = async (bd) => {
     try {
         const pizzas = await bd.pizzas.findAll({
             include: [
                 {
                     model: bd.turtles,
-                    as: 'firstFavoritePizza',
+                    as: 'firstFavoriteTurtles',
                     attributes: [],
                 },
                 {
                     model: bd.turtles,
-                    as: 'secondFavoritePizza',
+                    as: 'secondFavoriteTurtles',
                     attributes: [],
                 }
             ],
             attributes: ['name'],
             distinct: true,
         });
-        console.log(pizzas);
+        return pizzas;
     } catch (err) {
-        console.error(err);
+        return err;
     }
 }
-const myTurtle = {
-    name: 'Natallia',
-    color: 'purple',
-    weaponId: 1,
-}
-const addTurtle = async (myTurtle) => {
-    try {
-        const newTurtle = await bd.turtles.create(myTurtle);
-        console.log(newTurtle);
-    } catch (err) {
-        console.error(err);
-    }
-}
-const updatePizzasSuperFat = async()=> {
+const updatePizzasSuperFat = async(bd) => {
     try {
         const pizzasWithSuperFat = await bd.pizzas.update({
-            discription: Sequelize.fn('concat', Sequelize.col('discription'), 'SUPER FAT!')
+                description: Sequelize.fn('concat', Sequelize.col('description'), 'SUPER FAT!')
         },
             {
                 where: {
@@ -97,23 +124,24 @@ const updatePizzasSuperFat = async()=> {
                 }
             }
         )
-        console.log(pizzasWithSuperFat);
+        return pizzasWithSuperFat;
     } catch (err) {
-        console.error(err);
+        return err;
     }
 }
-const getNumberOfWeapons = async () => {
+const getNumberOfWeapons = async (bd) => {
     try {
         const weapons = await bd.weapons.count({
             where: {
                 dps: {
-                    [Sequelize.Op.gt]: 100,
+                    [Sequelize.Op.gt]: 85,
                 }
             }
         })
         console.log(weapons);
+        return weapons;
     } catch (err) {
-        console.error(err);
+        return err;
     }
 }
 const getPizzaWithId = async (id) => {
@@ -123,18 +151,19 @@ const getPizzaWithId = async (id) => {
                 id: id,
             }
         })
-        console.log(pizzaId)
+        return pizzaId;
     } catch (err) {
-        console.error(err);
+        return err;
     }
 }
-const addTurtleFavoritePizza = async (turtleId,favoritePizzaId ) => {
+const addTurtleFavoritePizza = async (turtleId, favoritePizzaId, body) => {
     try {
         const turtle = await bd.turtles.findOne({
             where: {
                 id: turtleId,
             }
         })
+        console.log(turtle);
         if (!turtle) {
             console.log(`there is no turtle with id ${turtleId}`);
             return;
@@ -144,14 +173,15 @@ const addTurtleFavoritePizza = async (turtleId,favoritePizzaId ) => {
                 id: favoritePizzaId,
             }
         })
+        console.log(pizza);
         if (!pizza) {
             console.log(`there is no pizza with id ${favoritePizzaId}`)
             return;
         }
-        const turtleWithFavoritePizza = await turtle.addPizza(pizza);
-        console.log(turtleWithFavoritePizza);
+        const turtleWithFavoritePizza = await turtle.update(pizza);
+        return turtleWithFavoritePizza;
     } catch(err){
-        console.error(err);
+        return err;
     }
 }
 
@@ -159,12 +189,8 @@ module.exports = {
     getAllTurtles,
     getTurtlesWithFavoritePizza,
     getAllFavoritePizzasWithoutRepeat,
-    addTurtle,
     updatePizzasSuperFat,
     getNumberOfWeapons,
     getPizzaWithId,
     addTurtleFavoritePizza,
-    // readPizzas,
-    // readWeapons,
-    // readTurtles,
 }

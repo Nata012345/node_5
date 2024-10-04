@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const helpers = require('../helpers/helper');
 
 module.exports = (bd) => {
     router.post('/', async ({body}, res) => {
@@ -18,6 +19,14 @@ module.exports = (bd) => {
             res.status(404).send(err);
         }
     });
+    router.get('/getAllTurtles', async(req, res) => {
+        try {
+            const turtles = await helpers.getAllTurtles(bd);
+            res.json(turtles);
+        } catch (err) {
+            res.status(404).send(err);
+        }
+    })
     router.get('/:id', async ({params}, res) => {
         try {
             const turtle = await bd.turtles.findOne({
@@ -31,7 +40,6 @@ module.exports = (bd) => {
         }
     });
     router.put('/:id', async ({body, params}, res) => {
-        console.log(params);
         try {
             const turtle = await bd.turtles.update(body, {
                 where: {
@@ -55,26 +63,14 @@ module.exports = (bd) => {
             res.status(404).send(err);
         }
     })
-    // router.get('/:pizzasName', async({params}, res) => {
-    //     console.log(params);
-    //     try {
-    //         const turtles = await bd.turtles.findAll({
-    //             include: [
-    //                 {
-    //                     model: bd.pizzas,
-    //                     where: {
-    //                         name: params,
-    //                     },
-    //                     through: {attributes: []}
-    //                 }
-    //             ]
-    //         })
-    //         res.json(turtles);
-    //     } catch (err) {
-    //         res.status(500).send(err);
-    //     }
-    // })
+    router.get('/turtlesWithFavoritePizza', async(req, res) => {
+        try {
+            const turtles = await helpers.getTurtlesWithFavoritePizza(bd, 'Pepperoni Pizza');
+            res.json(turtles);
+        } catch (err) {
+            res.status(404).send(err);
+        }
+    })
     return router;
-
 }
 

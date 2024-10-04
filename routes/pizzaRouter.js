@@ -54,12 +54,6 @@ module.exports = (bd) => {
             res.status(500).send(err);
         }
     })
-    // router.get('/favorite', async (req, res) => {
-    //     try {
-    //
-    //     } catch (err) {
-    //         res.status(500).send(err);
-    //     }
-    // })
+
     return router;
 }
